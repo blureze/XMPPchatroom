@@ -10,7 +10,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 
-public class XmppManager{
+public class Client{
 	
 	private static final int packetReplyTimeout = 500; // millis
 	
@@ -24,7 +24,7 @@ public class XmppManager{
 	private MessageListener messageListener;
 	private ChatGUI chatGUI;
 
-	public XmppManager(String server, int port) {
+	public Client(String server, int port) {
 		this.server = server;
 		this.port = port;
 	}
