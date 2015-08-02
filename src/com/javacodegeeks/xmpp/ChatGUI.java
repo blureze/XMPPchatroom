@@ -25,6 +25,8 @@ public class ChatGUI extends JFrame implements ActionListener{
 	private Message newMessage;
 	private String username;
 	
+	private boolean ready;
+	
 	public ChatGUI(String username) {
         this.setTitle("Chatroom");
         this.setSize(800, 600);
@@ -61,6 +63,8 @@ public class ChatGUI extends JFrame implements ActionListener{
 		
 		newMessage = new Message();
 		this.username = username;
+		this.ready = false;
+		
         this.setVisible(true);
 	}
 	
@@ -70,6 +74,7 @@ public class ChatGUI extends JFrame implements ActionListener{
 	}
 	
 	public Message getMessage() {
+		this.ready = false;
 		return newMessage;
 	}
 	
@@ -77,6 +82,11 @@ public class ChatGUI extends JFrame implements ActionListener{
 		chat.append(msg);
 	}
 
+	public boolean isReady() throws InterruptedException {
+		Thread.sleep(50);
+		return this.ready;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String msg = message.getText();
@@ -86,6 +96,7 @@ public class ChatGUI extends JFrame implements ActionListener{
 			showMessage(showmsg);
 			message.setText("");
 			message.requestFocus();
+			ready = true;
 		}
 	}
 }

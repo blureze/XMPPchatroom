@@ -63,15 +63,6 @@ public class LoginGUI extends JFrame implements ActionListener {
         txtHost.addActionListener(this);
         add(txtHost);
         
-        lblHost = new JLabel("Host: ");
-        lblHost.setBounds(10, 90, 90, 21);
-        add(lblHost);
-
-        txtHost = new JTextField();
-        txtHost.setBounds(105, 90, 90, 21);
-        txtHost.addActionListener(this);
-        add(txtHost);
-        
 		// the buttons
 		btnlogin = new JButton("Login");
 		btnlogin.addActionListener(this);

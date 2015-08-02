@@ -11,14 +11,15 @@ public class Main {
 		xmppManager.init();
 		xmppManager.performLogin();	// login
 		
-		xmppManager.createEntry("testUser2", "testUser2");
+		//xmppManager.createEntry("testUser2", "testUser2");
 
-		xmppManager.sendMessage();
+		//xmppManager.printRoster();
 		
 		while (true) {
 			Thread.sleep(50);
+			xmppManager.sendMessage();
 		}
-		
+	
 		//xmppManager.destroy();
 	}
 }

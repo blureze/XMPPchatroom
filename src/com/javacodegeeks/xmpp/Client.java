@@ -1,11 +1,14 @@
 package com.javacodegeeks.xmpp;
 
+import java.util.Collection;
+
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -24,6 +27,8 @@ public class Client{
 	private ChatManager chatManager;
 	private MessageListener messageListener;
 	private ChatGUI chatGUI;
+	
+	private Message newMessage;
 
 	public Client(String server, int port) {
 		this.server = server;
@@ -48,7 +53,6 @@ public class Client{
 		
 		chatManager = connection.getChatManager();
 		messageListener = new MyMessageListener();
-		
 	}
 	
 	public void performLogin() throws InterruptedException{
@@ -78,15 +82,17 @@ public class Client{
 	}
 	
 	public void sendMessage() throws XMPPException, InterruptedException {
+		while(!chatGUI.isReady());
 		System.out.println("ready to send.");
-		Message newMessage = chatGUI.getMessage();
-		while(newMessage.getBody() == null && newMessage.getTo() == null) {
+		
+		newMessage = chatGUI.getMessage();
+		while(newMessage.getBody() == null || newMessage.getTo() == null) {
 			Thread.sleep(3000);
-			newMessage = chatGUI.getMessage();
+			newMessage = chatGUI.getMessage();			
 		}
 		System.out.println(String.format("msg: '%1$s' with JID: %2$s", newMessage.getBody(), newMessage.getTo()));
 		Chat chat = chatManager.createChat(newMessage.getTo(), messageListener);
-		chat.sendMessage(newMessage);	
+		chat.sendMessage(newMessage);			
 	}
 	
     public void createEntry(String user, String name) throws Exception {
@@ -95,6 +101,15 @@ public class Client{
         roster.createEntry(user, name, null);
     }
 	
+    public void printRoster() throws Exception {
+    	 Roster roster = connection.getRoster();
+    	 Collection<RosterEntry> entries = roster.getEntries();  
+    	 for (RosterEntry entry : entries) {
+    	  System.out.println(String.format("Buddy:%1$s - Status:%2$s", 
+    	      entry.getName(), entry.getStatus()));
+    	 }
+    }
+    
 	class MyMessageListener implements MessageListener {
 
 		@Override
