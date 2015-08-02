@@ -31,7 +31,6 @@ public class LoginGUI extends JFrame implements ActionListener {
 	// Constructor connection receiving a socket number
 	public LoginGUI() {
 
-		//super("Chat Client");
         this.setTitle("Login");
         this.setSize(320, 240);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,6 +53,15 @@ public class LoginGUI extends JFrame implements ActionListener {
         txtPwd.setBounds(105, 50, 90, 21);
         txtPwd.addActionListener(this);
         add(txtPwd);
+
+        lblHost = new JLabel("Host: ");
+        lblHost.setBounds(10, 90, 90, 21);
+        add(lblHost);
+
+        txtHost = new JTextField();
+        txtHost.setBounds(105, 90, 90, 21);
+        txtHost.addActionListener(this);
+        add(txtHost);
         
         lblHost = new JLabel("Host: ");
         lblHost.setBounds(10, 90, 90, 21);
