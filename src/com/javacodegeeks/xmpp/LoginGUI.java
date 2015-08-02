@@ -30,7 +30,6 @@ public class LoginGUI extends JFrame implements ActionListener {
 	// Constructor connection receiving a socket number
 	public LoginGUI() {
 
-		//super("Chat Client");
         this.setTitle("Login");
         this.setSize(320, 240);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
