@@ -14,13 +14,14 @@ public class LoginGUI extends JFrame implements ActionListener {
 	// will first hold "Username:", later on "Enter message"
 	private static final long serialVersionUID = 1L;
 	
-	// to hold the Username and later on the messages
+	// to hold the Username, password and the host
 	private JLabel lblName;
 	private JLabel lblPwd;
+	private JLabel lblHost;
 
-	// to hold the server address an the port number
 	private JTextField txtName;
 	private JTextField txtPwd;
+	private JTextField txtHost;
 	
 	// to login
 	private JButton btnlogin;
@@ -54,10 +55,19 @@ public class LoginGUI extends JFrame implements ActionListener {
         txtPwd.addActionListener(this);
         add(txtPwd);
         
+        lblHost = new JLabel("Host: ");
+        lblHost.setBounds(10, 90, 90, 21);
+        add(lblHost);
+
+        txtHost = new JTextField();
+        txtHost.setBounds(105, 90, 90, 21);
+        txtHost.addActionListener(this);
+        add(txtHost);
+        
 		// the buttons
 		btnlogin = new JButton("Login");
 		btnlogin.addActionListener(this);
-		btnlogin.setBounds(20, 100, 100, 20);
+		btnlogin.setBounds(100, 140, 100, 20);
 		add(btnlogin);
 		
 		// login is not finished
