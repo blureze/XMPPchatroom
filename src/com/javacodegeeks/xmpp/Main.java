@@ -3,7 +3,7 @@ package com.javacodegeeks.xmpp;
 public class Main {
 	
 	public static void main(String[] args) throws Exception {
-		LoginGUI login = new LoginGUI();
+		new LoginGUI();
 		
 		/*Client xmppManager = new Client("140.114.204.76", 5222);
 		xmppManager.init();

@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -29,7 +30,6 @@ public class ChatGUI extends JFrame implements ActionListener{
 	private Message newMessage;
 	private String username;
 	
-	private boolean ready;
 	private ChatManager chatManager;
 	private MessageListener messageListener;
 	
@@ -70,30 +70,16 @@ public class ChatGUI extends JFrame implements ActionListener{
 		this.username = username;
 		this.chatManager = chatManager;
 		this.messageListener = messageListener;
-		this.ready = false;
 		
         this.setVisible(true);
 	}
 	
-	public void setMessage(String msg, String to) {
-		newMessage.setBody(msg);
-		newMessage.setTo(to);
-	}
-	
-	public Message getMessage() {
-		this.ready = false;
-		return newMessage;
-	}
-	
 	public void showMessage(String msg) {
+		JLabel test = new JLabel();
+		test.setForeground(Color.RED);
 		chat.append(msg);
 	}
 
-	public boolean isReady() throws InterruptedException {
-		Thread.sleep(50);
-		return this.ready;
-	}
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String msg = message.getText();
@@ -117,7 +103,6 @@ public class ChatGUI extends JFrame implements ActionListener{
 			showMessage(showmsg);
 			message.setText("");
 			message.requestFocus();
-			//ready = true;
 		}
 	}
 }

@@ -33,10 +33,6 @@ public class Client{
 	private MessageListener messageListener;
 	private ChatGUI chatGUI;
 	
-	private Message newMessage;
-	/****/
-	private String sendTo;
-
 	public Client(String server, int port, String username, String password) throws XMPPException, InterruptedException {
 		this.server = server;
 		this.port = port;
@@ -79,21 +75,10 @@ public class Client{
 	public void performLogin() throws InterruptedException{
 		
 		if (connection!=null && connection.isConnected()) {
-			//LoginGUI login = new LoginGUI();
-			//while(!login.ready());	// wait until user typing is finished		
 			System.out.println("ready to login");
-			//String username = login.getUser();
-			//String password = login.getPwd();
 			try {
 				connection.login(username, password);
 				System.out.println("Login successfully.");
-				/************/
-				if(username.equals("testUser1"))
-					sendTo = "testUser2@blureze-pc";
-				else
-					sendTo = "testUser1@blureze-pc";
-				/************/
-				//login.dispose();
 				chatGUI = new ChatGUI(username, chatManager, messageListener);
 			} catch (XMPPException e) {
 				e.printStackTrace();
@@ -116,24 +101,6 @@ public class Client{
 		if (connection!=null && connection.isConnected()) {
 			connection.disconnect();
 		}
-	}
-	
-	public void sendMessage() throws XMPPException, InterruptedException {
-		while(!chatGUI.isReady());
-		System.out.println("ready to send.");
-		
-		newMessage = chatGUI.getMessage();
-		/*while(newMessage.getBody() == null || newMessage.getTo() == null) {
-			Thread.sleep(3000);
-			newMessage = chatGUI.getMessage();			
-		}*/
-		if(newMessage.getBody() == null || newMessage.getTo() == null)
-			return;
-		//System.out.println(String.format("msg: '%1$s' with JID: %2$s", newMessage.getBody(), newMessage.getTo()));
-		System.out.println(String.format("msg: '%1$s' with JID: %2$s", newMessage.getBody(), sendTo));
-		//Chat chat = chatManager.createChat(newMessage.getTo(), messageListener);
-		Chat chat = chatManager.createChat(sendTo, messageListener);
-		chat.sendMessage(newMessage);			
 	}
 	
     public void createEntry(String user, String name) throws Exception {

@@ -26,8 +26,6 @@ public class LoginGUI extends JFrame implements ActionListener {
 	// to login
 	private JButton btnlogin;
 	
-	private boolean finished;
-
 	// Constructor connection receiving a socket number
 	public LoginGUI() {
 
@@ -69,27 +67,7 @@ public class LoginGUI extends JFrame implements ActionListener {
 		btnlogin.setBounds(100, 140, 100, 20);
 		add(btnlogin);
 		
-		// login is not finished
-		finished = false;
-		
 		setVisible(true);
-	}
-	
-	public String getUser() {
-		return txtName.getText();
-	}
-	
-	public String getPwd() {
-		return txtPwd.getText();
-	}
-	
-	public String getHost() {
-		return txtHost.getText();
-	}
-	
-	public boolean ready() throws InterruptedException {
-		Thread.sleep(50);
-		return finished;
 	}
 	
 	@Override
@@ -113,13 +91,12 @@ public class LoginGUI extends JFrame implements ActionListener {
 		}
 		
 		try {
-			Client xmppManager = new Client(server, 5222, username, password);
+			new Client(server, 5222, username, password);
 			this.dispose();
 		} catch (XMPPException e1) {
 			e1.printStackTrace();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		//finished = true;
 	}
 }
