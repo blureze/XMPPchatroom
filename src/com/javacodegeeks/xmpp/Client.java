@@ -32,6 +32,8 @@ public class Client{
 	private ChatGUI chatGUI;
 	
 	private Message newMessage;
+	/****/
+	private String sendTo;
 
 	public Client(String server, int port) {
 		this.server = server;
@@ -78,6 +80,11 @@ public class Client{
 			try {
 				connection.login(username, password);
 				System.out.println("Login successfully.");
+				/************/
+				if(username.equals("testUser1"))
+					sendTo = "testUser2@blureze-pc";
+				else
+					sendTo = "testUser1@blureze-pc";
 				login.dispose();
 				chatGUI = new ChatGUI(username);
 			} catch (XMPPException e) {
@@ -112,8 +119,10 @@ public class Client{
 			Thread.sleep(3000);
 			newMessage = chatGUI.getMessage();			
 		}
-		System.out.println(String.format("msg: '%1$s' with JID: %2$s", newMessage.getBody(), newMessage.getTo()));
-		Chat chat = chatManager.createChat(newMessage.getTo(), messageListener);
+		//System.out.println(String.format("msg: '%1$s' with JID: %2$s", newMessage.getBody(), newMessage.getTo()));
+		System.out.println(String.format("msg: '%1$s' with JID: %2$s", newMessage.getBody(), sendTo));
+		//Chat chat = chatManager.createChat(newMessage.getTo(), messageListener);
+		Chat chat = chatManager.createChat(sendTo, messageListener);
 		chat.sendMessage(newMessage);			
 	}
 	
