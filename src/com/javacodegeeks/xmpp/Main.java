@@ -10,16 +10,17 @@ public class Main {
 		Client xmppManager = new Client("140.114.204.76", 5222);
 		xmppManager.init();
 		xmppManager.performLogin();	// login
-		
-		//xmppManager.createEntry("testUser2", "testUser2");
+		xmppManager.setStatus(true, "Hello");
+		xmppManager.createEntry("testUser2@140.114.204.76", "testUser2");
 
-		//xmppManager.printRoster();
+		xmppManager.printRoster();
 		
-		while (true) {
-			Thread.sleep(50);
+		boolean isRunning = true;
+		while (isRunning) {
+			Thread.sleep(500);
 			xmppManager.sendMessage();
 		}
 	
-		//xmppManager.destroy();
+		xmppManager.destroy();
 	}
 }

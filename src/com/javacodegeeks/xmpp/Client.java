@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
+import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.MessageListener;
@@ -13,6 +14,8 @@ import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Type;
 
 public class Client{
 	
@@ -53,6 +56,15 @@ public class Client{
 		
 		chatManager = connection.getChatManager();
 		messageListener = new MyMessageListener();
+		
+		chatManager.addChatListener( new ChatManagerListener() {
+			@Override
+			public void chatCreated(Chat chat, boolean createdLocally) {
+				if (!createdLocally)
+					//chat.addMessageListener(new MyNewMessageListener());;
+					chat.addMessageListener(messageListener);;
+			}
+		});
 	}
 	
 	public void performLogin() throws InterruptedException{
@@ -74,6 +86,16 @@ public class Client{
 			}
 		}
 	}
+	
+    public void setStatus(boolean available, String status) {
+        
+        Presence.Type type = available? Type.available: Type.unavailable;
+        Presence presence = new Presence(type);
+        
+        presence.setStatus(status);
+        connection.sendPacket(presence);
+        
+    }
 	
 	public void destroy() {
 		if (connection!=null && connection.isConnected()) {
@@ -105,13 +127,11 @@ public class Client{
     	 Roster roster = connection.getRoster();
     	 Collection<RosterEntry> entries = roster.getEntries();  
     	 for (RosterEntry entry : entries) {
-    	  System.out.println(String.format("Buddy:%1$s - Status:%2$s", 
-    	      entry.getName(), entry.getStatus()));
+    		 System.out.println(entry);
     	 }
     }
     
 	class MyMessageListener implements MessageListener {
-
 		@Override
 		public void processMessage(Chat chat, Message message) {
 			String from = message.getFrom();
