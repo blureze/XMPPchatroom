@@ -23,6 +23,8 @@ public class Client{
 	
 	private String server;
 	private int port;
+	private String username;
+	private String password;
 	
 	private ConnectionConfiguration config;
 	private XMPPConnection connection;
@@ -35,12 +37,16 @@ public class Client{
 	/****/
 	private String sendTo;
 
-	public Client(String server, int port) {
+	public Client(String server, int port, String username, String password) throws XMPPException, InterruptedException {
 		this.server = server;
 		this.port = port;
+		this.username = username;
+		this.password = password;
+		
+		init();
 	}
 	
-	public void init() throws XMPPException {
+	public void init() throws XMPPException, InterruptedException {
 		
 		System.out.println(String.format("Initializing connection to server %1$s port %2$d", server, port));
 
@@ -63,20 +69,21 @@ public class Client{
 			@Override
 			public void chatCreated(Chat chat, boolean createdLocally) {
 				if (!createdLocally)
-					//chat.addMessageListener(new MyNewMessageListener());;
 					chat.addMessageListener(messageListener);;
 			}
 		});
+		
+		performLogin();
 	}
 	
 	public void performLogin() throws InterruptedException{
 		
 		if (connection!=null && connection.isConnected()) {
-			LoginGUI login = new LoginGUI();
-			while(!login.ready());	// wait until user typing is finished		
+			//LoginGUI login = new LoginGUI();
+			//while(!login.ready());	// wait until user typing is finished		
 			System.out.println("ready to login");
-			String username = login.getUser();
-			String password = login.getPwd();
+			//String username = login.getUser();
+			//String password = login.getPwd();
 			try {
 				connection.login(username, password);
 				System.out.println("Login successfully.");
@@ -85,8 +92,9 @@ public class Client{
 					sendTo = "testUser2@blureze-pc";
 				else
 					sendTo = "testUser1@blureze-pc";
-				login.dispose();
-				chatGUI = new ChatGUI(username);
+				/************/
+				//login.dispose();
+				chatGUI = new ChatGUI(username, chatManager, messageListener);
 			} catch (XMPPException e) {
 				e.printStackTrace();
 				System.out.println("Wrong username or password.");
@@ -115,10 +123,12 @@ public class Client{
 		System.out.println("ready to send.");
 		
 		newMessage = chatGUI.getMessage();
-		while(newMessage.getBody() == null || newMessage.getTo() == null) {
+		/*while(newMessage.getBody() == null || newMessage.getTo() == null) {
 			Thread.sleep(3000);
 			newMessage = chatGUI.getMessage();			
-		}
+		}*/
+		if(newMessage.getBody() == null || newMessage.getTo() == null)
+			return;
 		//System.out.println(String.format("msg: '%1$s' with JID: %2$s", newMessage.getBody(), newMessage.getTo()));
 		System.out.println(String.format("msg: '%1$s' with JID: %2$s", newMessage.getBody(), sendTo));
 		//Chat chat = chatManager.createChat(newMessage.getTo(), messageListener);

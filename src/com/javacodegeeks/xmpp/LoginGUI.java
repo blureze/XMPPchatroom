@@ -8,13 +8,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import org.jivesoftware.smack.XMPPException;
+
 
 public class LoginGUI extends JFrame implements ActionListener {
-
-	// will first hold "Username:", later on "Enter message"
 	private static final long serialVersionUID = 1L;
 	
-	// to hold the Username, password and the host
+	// to hold the username, password and the host
 	private JLabel lblName;
 	private JLabel lblPwd;
 	private JLabel lblHost;
@@ -58,7 +58,7 @@ public class LoginGUI extends JFrame implements ActionListener {
         lblHost.setBounds(10, 90, 90, 21);
         add(lblHost);
 
-        txtHost = new JTextField();
+        txtHost = new JTextField("140.114.204.76");
         txtHost.setBounds(105, 90, 90, 21);
         txtHost.addActionListener(this);
         add(txtHost);
@@ -83,6 +83,10 @@ public class LoginGUI extends JFrame implements ActionListener {
 		return txtPwd.getText();
 	}
 	
+	public String getHost() {
+		return txtHost.getText();
+	}
+	
 	public boolean ready() throws InterruptedException {
 		Thread.sleep(50);
 		return finished;
@@ -95,11 +99,27 @@ public class LoginGUI extends JFrame implements ActionListener {
 			System.out.println("User can't be empty.");
 			return;
 		}
+		
 		String password = txtPwd.getText();
 		if(password.length() == 0) {	// empty password ignore it
 			System.out.println("Password can't be empty.");
 			return;
 		}
-		finished = true;
+		
+		String server = txtHost.getText();
+		if(server.length() == 0) {	// empty host ignore it
+			System.out.println("Server can't be empty.");
+			return;
+		}
+		
+		try {
+			Client xmppManager = new Client(server, 5222, username, password);
+			this.dispose();
+		} catch (XMPPException e1) {
+			e1.printStackTrace();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		//finished = true;
 	}
 }

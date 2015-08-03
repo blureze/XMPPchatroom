@@ -3,11 +3,9 @@ package com.javacodegeeks.xmpp;
 public class Main {
 	
 	public static void main(String[] args) throws Exception {
+		LoginGUI login = new LoginGUI();
 		
-		//String username = "testUser1";
-		//String password = "testUser1";
-
-		Client xmppManager = new Client("140.114.204.76", 5222);
+		/*Client xmppManager = new Client("140.114.204.76", 5222);
 		xmppManager.init();
 		xmppManager.performLogin();	// login
 		xmppManager.setStatus(true, "Hello");
@@ -18,9 +16,9 @@ public class Main {
 		boolean isRunning = true;
 		while (isRunning) {
 			Thread.sleep(500);
-			xmppManager.sendMessage();
+			//xmppManager.sendMessage();
 		}
 	
-		xmppManager.destroy();
+		xmppManager.destroy();*/
 	}
 }
