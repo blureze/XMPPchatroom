@@ -128,7 +128,8 @@ public class ChatGUI extends JFrame implements ActionListener{
             inputLine = inputLine.replace('"', ' ');
             picURL = inputLine.split(",");
             int size = picURL.length;
-            for(int i = 0; i < size; i++) {
+            /*******************/
+            for(int i = 0; i < 3; i++) {
             	String str = picURL[i].trim();
             	str = str.split("https://s3.amazonaws.com/peekaboom_id/")[1];
             	picID.add(str);
@@ -136,23 +137,30 @@ public class ChatGUI extends JFrame implements ActionListener{
             	
             in.close();
             //new PicWindow("https://s3.amazonaws.com/peekaboom_id/" + picID.get(0));
-            displayImg("https://s3.amazonaws.com/peekaboom_id/" + picID.get(0));
+            displayImg(picID);
         } else {
             System.out.println("GET request not worked");
         }
     }
 	
-    private void displayImg(String imgURL) {
+    private void displayImg(ArrayList<String> picID) {
     	Image image = null;
-        try {
-            URL url = new URL(imgURL);
-            image = ImageIO.read(url);
-        } catch (IOException e) {
-        	e.printStackTrace();
-        }
-        
-        JLabel label = new JLabel(new ImageIcon(image));
-        img.add(label);
+    	String imgURL = null;
+    	img.removeAll();
+    	
+    	for(int i = 0; i < 3; i++) {
+	        try {
+	        	imgURL = "https://s3.amazonaws.com/peekaboom_id/" + picID.get(i);
+	            URL url = new URL(imgURL);
+	            image = ImageIO.read(url);
+	        } catch (IOException e) {
+	        	e.printStackTrace();
+	        }
+	        
+	        JLabel label = new JLabel(new ImageIcon(image));
+	        img.add(label);    		
+    	}
+
         this.pack();
     }
     
