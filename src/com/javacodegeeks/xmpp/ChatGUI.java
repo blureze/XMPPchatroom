@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -43,6 +45,13 @@ public class ChatGUI extends JFrame implements ActionListener{
 		
 		chat = new JTextArea();		// message display
 		chat.setEditable(false);
+		chat.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				JTextArea s = (JTextArea) e.getSource();
+				String str = s.getSelectedText();
+				System.out.println(str);
+			}
+		});
 		chatPanel.add(chat,BorderLayout.CENTER);
 
 		typingPanel = new JPanel();
