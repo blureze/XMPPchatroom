@@ -2,11 +2,21 @@ package com.javacodegeeks.xmpp;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,6 +34,7 @@ public class ChatGUI extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private JPanel chatPanel;
 	private JPanel imgPanel;
+	private JPanel img;
 	private JPanel typingPanel;
 	private JTextArea chat;
 	private JTextArea queryRecord;
@@ -45,11 +56,17 @@ public class ChatGUI extends JFrame implements ActionListener{
 		
 		chat = new JTextArea();		// message display
 		chat.setEditable(false);
+		chat.setSelectedTextColor(Color.RED);
 		chat.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				JTextArea s = (JTextArea) e.getSource();
 				String str = s.getSelectedText();
 				System.out.println(str);
+				try {
+					sendGET(str);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		chatPanel.add(chat,BorderLayout.CENTER);
@@ -67,7 +84,10 @@ public class ChatGUI extends JFrame implements ActionListener{
 		chatPanel.add(typingPanel, BorderLayout.SOUTH);
 
 		imgPanel = new JPanel(new BorderLayout());
-		imgPanel.setBackground(Color.BLUE);
+		
+		img = new JPanel(new GridLayout(3,1));
+		img.setBackground(Color.GREEN);
+		imgPanel.add(img, BorderLayout.CENTER);
 		
 		queryRecord = new JTextArea("scent");
 		queryRecord.setEditable(false);
@@ -89,6 +109,53 @@ public class ChatGUI extends JFrame implements ActionListener{
 		chat.append(msg);
 	}
 
+    private void sendGET(String query) throws IOException {
+    	String url = "https://sheltered-scrubland-2490.herokuapp.com/query/" + query;
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        int responseCode = con.getResponseCode();
+        System.out.println("GET Response Code :: " + responseCode);
+        if (responseCode == HttpURLConnection.HTTP_OK) { // success
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            String[] picURL;
+            ArrayList<String> picID = new ArrayList<String>();
+            
+            inputLine = in.readLine();
+            System.out.println(inputLine);
+            inputLine = inputLine.substring(1, inputLine.length()-1);
+            inputLine = inputLine.replace('"', ' ');
+            picURL = inputLine.split(",");
+            int size = picURL.length;
+            for(int i = 0; i < size; i++) {
+            	String str = picURL[i].trim();
+            	str = str.split("https://s3.amazonaws.com/peekaboom_id/")[1];
+            	picID.add(str);
+            }
+            	
+            in.close();
+            //new PicWindow("https://s3.amazonaws.com/peekaboom_id/" + picID.get(0));
+            displayImg("https://s3.amazonaws.com/peekaboom_id/" + picID.get(0));
+        } else {
+            System.out.println("GET request not worked");
+        }
+    }
+	
+    private void displayImg(String imgURL) {
+    	Image image = null;
+        try {
+            URL url = new URL(imgURL);
+            image = ImageIO.read(url);
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+        
+        JLabel label = new JLabel(new ImageIcon(image));
+        img.add(label);
+        this.pack();
+    }
+    
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String msg = message.getText();
