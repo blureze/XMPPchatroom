@@ -78,8 +78,22 @@ public class ChatGUI extends JFrame implements ActionListener{
 									}									
 								}	
 							});
+							
+							Thread translation = new Thread(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										translate();
+									} catch (Exception e) {
+										e.printStackTrace();
+									}									
+								}	
+							});
+							
 							sendQuery.setDaemon(true);
 							sendQuery.start();
+							translation.setDaemon(true);
+							translation.start();
 						}
 					}
 				});
@@ -125,8 +139,6 @@ public class ChatGUI extends JFrame implements ActionListener{
 	}
 	
 	public void showMessage(String msg) {
-		JLabel test = new JLabel();
-		test.setForeground(Color.RED);
 		chat.append(msg);
 	}
 
@@ -188,6 +200,10 @@ public class ChatGUI extends JFrame implements ActionListener{
     	}
 
         this.pack();
+    }
+    
+    private void translate() throws Exception {
+    	new Translator(query);
     }
     
 	@Override
