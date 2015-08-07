@@ -37,14 +37,17 @@ public class ChatGUI extends JFrame implements ActionListener{
 	private JPanel img;
 	private JPanel typingPanel;
 	private JTextArea chat;
-	private JTextArea queryRecord;
+	private JTextArea scentspace;
 	private JTextField message;
 	private JButton sendbtn;
 	private Message newMessage;
 	private String username;
+	private String query;
 	
 	private ChatManager chatManager;
 	private MessageListener messageListener;
+	private ArrayList<String> scents;
+
 	
 	public ChatGUI(String username, ChatManager chatManager, MessageListener messageListener) {
         this.setTitle("Chatroom");
@@ -57,18 +60,32 @@ public class ChatGUI extends JFrame implements ActionListener{
 		chat = new JTextArea();		// message display
 		chat.setEditable(false);
 		chat.setSelectedTextColor(Color.RED);
-		chat.addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {
-				JTextArea s = (JTextArea) e.getSource();
-				String str = s.getSelectedText();
-				System.out.println(str);
-				try {
-					sendGET(str);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+		Thread selectText = new Thread(new Runnable() {
+			public void run() {		
+				chat.addMouseListener(new MouseAdapter() {
+					public void mouseReleased(MouseEvent e) {
+						JTextArea s = (JTextArea) e.getSource();
+			    		query = s.getSelectedText();
+			    		System.out.println(query);
+			    		if(query != null) {
+							Thread sendQuery = new Thread(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										sendGET();
+									} catch (IOException e) {
+										e.printStackTrace();
+									}									
+								}	
+							});
+							sendQuery.setDaemon(true);
+							sendQuery.start();
+						}
+					}
+				});
 			}
-		});
+	    });
+
 		chatPanel.add(chat,BorderLayout.CENTER);
 
 		typingPanel = new JPanel();
@@ -89,9 +106,9 @@ public class ChatGUI extends JFrame implements ActionListener{
 		img.setBackground(Color.GREEN);
 		imgPanel.add(img, BorderLayout.CENTER);
 		
-		queryRecord = new JTextArea("scent");
-		queryRecord.setEditable(false);
-		imgPanel.add(queryRecord, BorderLayout.SOUTH);
+		scentspace = new JTextArea();
+		scentspace.setEditable(false);
+		imgPanel.add(scentspace, BorderLayout.SOUTH);
 
 		add(chatPanel, BorderLayout.CENTER);
 		add(imgPanel, BorderLayout.EAST);
@@ -99,6 +116,10 @@ public class ChatGUI extends JFrame implements ActionListener{
 		this.username = username;
 		this.chatManager = chatManager;
 		this.messageListener = messageListener;
+		selectText.setDaemon(true);
+		selectText.start();
+
+		scents = new ArrayList<String>();
 		
         this.setVisible(true);
 	}
@@ -109,7 +130,7 @@ public class ChatGUI extends JFrame implements ActionListener{
 		chat.append(msg);
 	}
 
-    private void sendGET(String query) throws IOException {
+    private void sendGET() throws IOException{
     	String url = "https://sheltered-scrubland-2490.herokuapp.com/query/" + query;
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -121,22 +142,27 @@ public class ChatGUI extends JFrame implements ActionListener{
             String inputLine;
             String[] picURL;
             ArrayList<String> picID = new ArrayList<String>();
-            
-            inputLine = in.readLine();
-            System.out.println(inputLine);
-            inputLine = inputLine.substring(1, inputLine.length()-1);
-            inputLine = inputLine.replace('"', ' ');
-            picURL = inputLine.split(",");
-            int size = picURL.length;
-            /*******************/
-            for(int i = 0; i < 3; i++) {
-            	String str = picURL[i].trim();
-            	str = str.split("https://s3.amazonaws.com/peekaboom_id/")[1];
-            	picID.add(str);
+   
+            // add to scent space
+            if(scents.isEmpty() || !scents.contains(query)) {
+            	scents.add(query);
+            	scentspace.append(query + "\t");
             }
-            	
-            in.close();
-            //new PicWindow("https://s3.amazonaws.com/peekaboom_id/" + picID.get(0));
+            
+			inputLine = in.readLine();
+	        System.out.println(inputLine);
+	        inputLine = inputLine.substring(1, inputLine.length()-1);
+	        inputLine = inputLine.replace('"', ' ');
+	        picURL = inputLine.split(",");
+	        int size = picURL.length;
+	        /*******************/
+	        for(int i = 0; i < 3; i++) {
+	         	String str = picURL[i].trim();
+	           	str = str.split("https://s3.amazonaws.com/peekaboom_id/")[1];
+	           	picID.add(str);
+	        }
+	            	
+	        in.close();
             displayImg(picID);
         } else {
             System.out.println("GET request not worked");
