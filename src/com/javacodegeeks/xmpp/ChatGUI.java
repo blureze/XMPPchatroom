@@ -40,9 +40,12 @@ public class ChatGUI extends JFrame implements ActionListener{
 	private JTextArea scentspace;
 	private JTextField message;
 	private JButton sendbtn;
+	
 	private Message newMessage;
 	private String username;
 	private String query;
+	private int mouseX;
+	private int mouseY;
 	
 	private ChatManager chatManager;
 	private MessageListener messageListener;
@@ -66,6 +69,8 @@ public class ChatGUI extends JFrame implements ActionListener{
 					public void mouseReleased(MouseEvent e) {
 						JTextArea s = (JTextArea) e.getSource();
 			    		query = s.getSelectedText();
+			    		mouseX = e.getX();
+			    		mouseY = e.getY();
 			    		System.out.println(query);
 			    		if(query != null) {
 							Thread sendQuery = new Thread(new Runnable() {
@@ -134,7 +139,8 @@ public class ChatGUI extends JFrame implements ActionListener{
 		selectText.start();
 
 		scents = new ArrayList<String>();
-		
+
+		//this.pack();
         this.setVisible(true);
 	}
 	
@@ -203,7 +209,16 @@ public class ChatGUI extends JFrame implements ActionListener{
     }
     
     private void translate() throws Exception {
-    	new Translator(query);
+    	Translator translator = new Translator(query);
+    	String translatedText = translator.getTranslatedText();
+
+    	JLabel translationlb = new JLabel();
+        translationlb.setText(translatedText);
+        translationlb.setLocation(mouseX, mouseY+15);
+        
+        img.add(translationlb);
+        img.revalidate();
+        img.repaint();
     }
     
 	@Override

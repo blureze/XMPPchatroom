@@ -1,5 +1,10 @@
 package com.javacodegeeks.xmpp;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Collection;
 
 import org.jivesoftware.smack.Chat;
@@ -17,7 +22,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
 
-public class Client{
+public class Client implements Serializable{
 	
 	private static final int packetReplyTimeout = 500; // millis
 	
@@ -33,7 +38,7 @@ public class Client{
 	private MessageListener messageListener;
 	private ChatGUI chatGUI;
 	
-	public Client(String server, int port, String username, String password) throws XMPPException, InterruptedException {
+	public Client(String server, int port, String username, String password) throws XMPPException, InterruptedException, UnknownHostException, IOException {
 		this.server = server;
 		this.port = port;
 		this.username = username;
@@ -45,7 +50,7 @@ public class Client{
 	public void init() throws XMPPException, InterruptedException {
 		
 		System.out.println(String.format("Initializing connection to server %1$s port %2$d", server, port));
-
+		
 		SmackConfiguration.setPacketReplyTimeout(packetReplyTimeout);
 		
 		// Create a connection to the igniterealtime.org XMPP server.
@@ -69,6 +74,23 @@ public class Client{
 			}
 		});
 		
+		Thread socketClient = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Socket client;
+				try {
+					client = new Socket(server, port);
+					System.out.println("client connect to server.");
+					 DataOutputStream out = new DataOutputStream(client.getOutputStream());
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}				
+			}			
+		});
+	   
+	    socketClient.start();
 		performLogin();
 	}
 	

@@ -2,6 +2,8 @@ package com.javacodegeeks.xmpp;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.UnknownHostException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -96,6 +98,10 @@ public class LoginGUI extends JFrame implements ActionListener {
 		} catch (XMPPException e1) {
 			e1.printStackTrace();
 		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 	}
