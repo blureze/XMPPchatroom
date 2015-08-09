@@ -23,6 +23,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
@@ -51,6 +55,8 @@ public class ChatGUI extends JFrame implements ActionListener{
 	private MessageListener messageListener;
 	private ArrayList<String> scents;
 
+	private Highlighter highlighter;
+	private HighlightPainter painter;
 	
 	public ChatGUI(String username, ChatManager chatManager, MessageListener messageListener) {
         this.setTitle("Chatroom");
@@ -63,16 +69,31 @@ public class ChatGUI extends JFrame implements ActionListener{
 		chat = new JTextArea();		// message display
 		chat.setEditable(false);
 		chat.setSelectedTextColor(Color.RED);
+		highlighter = chat.getHighlighter();
+		painter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
 		Thread selectText = new Thread(new Runnable() {
 			public void run() {		
-				chat.addMouseListener(new MouseAdapter() {
+				chat.addMouseMotionListener(new MouseAdapter() {
+					public void mouseDragged(MouseEvent e) {
+						JTextArea s = (JTextArea) e.getSource();
+						System.out.println(s.getSelectedText());
+						
+					}					
+				});
+				
+				chat.addMouseListener(new MouseAdapter() {					
 					public void mouseReleased(MouseEvent e) {
 						JTextArea s = (JTextArea) e.getSource();
 			    		query = s.getSelectedText();
-			    		mouseX = e.getX();
-			    		mouseY = e.getY();
-			    		System.out.println(query);
+			    		try {
+							highlighter.addHighlight(s.getSelectionStart(), s.getSelectionEnd(), painter );
+						} catch (BadLocationException e1) {
+							e1.printStackTrace();
+						}
+			    		
 			    		if(query != null) {
+			    			System.out.println(query);
+				    		System.out.println(s.getSelectionStart() + " " + s.getSelectionEnd());
 							Thread sendQuery = new Thread(new Runnable() {
 								@Override
 								public void run() {
@@ -104,7 +125,7 @@ public class ChatGUI extends JFrame implements ActionListener{
 				});
 			}
 	    });
-
+		
 		chatPanel.add(chat,BorderLayout.CENTER);
 
 		typingPanel = new JPanel();

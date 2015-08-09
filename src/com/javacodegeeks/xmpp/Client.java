@@ -81,7 +81,7 @@ public class Client implements Serializable{
 				try {
 					client = new Socket(server, port);
 					System.out.println("client connect to server.");
-					 DataOutputStream out = new DataOutputStream(client.getOutputStream());
+					DataOutputStream out = new DataOutputStream(client.getOutputStream());
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
