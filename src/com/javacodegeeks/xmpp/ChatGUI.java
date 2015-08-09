@@ -11,8 +11,12 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -55,15 +59,22 @@ public class ChatGUI extends JFrame implements ActionListener{
 	private MessageListener messageListener;
 	private ArrayList<String> scents;
 
+	private Socket client;
+	private ObjectOutputStream out;
+	
 	private Highlighter highlighter;
 	private HighlightPainter painter;
 	
-	public ChatGUI(String username, ChatManager chatManager, MessageListener messageListener) {
+	public ChatGUI(String username, ChatManager chatManager, MessageListener messageListener, final String server, final int port) {
         this.setTitle("Chatroom");
         this.setSize(800, 600);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout());
         
+        this.username = username;
+		this.chatManager = chatManager;
+		this.messageListener = messageListener;
+				
 		chatPanel = new JPanel(new BorderLayout());
 		
 		chat = new JTextArea();		// message display
@@ -76,8 +87,36 @@ public class ChatGUI extends JFrame implements ActionListener{
 				chat.addMouseMotionListener(new MouseAdapter() {
 					public void mouseDragged(MouseEvent e) {
 						JTextArea s = (JTextArea) e.getSource();
-						System.out.println(s.getSelectedText());
+						String selectedWord = s.getSelectedText();
+						System.out.println(selectedWord);
 						
+						if(selectedWord != null) {
+							client = new Socket();
+							final InetSocketAddress isa = new InetSocketAddress(server,port);
+							Thread socketClient = new Thread(new Runnable() {
+								@Override
+								public void run() {
+									try {
+								          //送出object
+										client.connect(isa,10000);
+										System.out.println("client connect to server.");
+										MouseCoordinate mouse = new MouseCoordinate(1,1);
+										out = new ObjectOutputStream(client.getOutputStream());
+								        out.writeObject(mouse);
+								        out.flush();
+								        out.close();
+								        out = null ;
+									} catch (UnknownHostException e) {
+										e.printStackTrace();
+									} catch (IOException e) {
+								        System.out.println("Socket連線有問題 !" );
+								        System.out.println("IOException :" + e.toString());
+										e.printStackTrace();
+									}				
+								}			
+							});
+							socketClient.start();
+						}
 					}					
 				});
 				
@@ -85,6 +124,8 @@ public class ChatGUI extends JFrame implements ActionListener{
 					public void mouseReleased(MouseEvent e) {
 						JTextArea s = (JTextArea) e.getSource();
 			    		query = s.getSelectedText();
+			    		mouseX = e.getX();
+			    		mouseY = e.getY();
 			    		try {
 							highlighter.addHighlight(s.getSelectionStart(), s.getSelectionEnd(), painter );
 						} catch (BadLocationException e1) {
@@ -153,15 +194,11 @@ public class ChatGUI extends JFrame implements ActionListener{
 		add(chatPanel, BorderLayout.CENTER);
 		add(imgPanel, BorderLayout.EAST);
 		
-		this.username = username;
-		this.chatManager = chatManager;
-		this.messageListener = messageListener;
 		selectText.setDaemon(true);
 		selectText.start();
 
 		scents = new ArrayList<String>();
 
-		//this.pack();
         this.setVisible(true);
 	}
 	

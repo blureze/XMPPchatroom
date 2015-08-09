@@ -2,6 +2,7 @@ package com.javacodegeeks.xmpp;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -23,11 +24,13 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
 
 public class Client implements Serializable{
-	
+	private static final long serialVersionUID = 1L;
+
 	private static final int packetReplyTimeout = 500; // millis
 	
 	private String server;
-	private int port;
+	private int port;	// port number for chatting
+	private int socketPort = 5678;	// port number for send object
 	private String username;
 	private String password;
 	
@@ -74,14 +77,22 @@ public class Client implements Serializable{
 			}
 		});
 		
-		Thread socketClient = new Thread(new Runnable() {
+		/*Thread socketClient = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				Socket client;
 				try {
 					client = new Socket(server, port);
 					System.out.println("client connect to server.");
-					DataOutputStream out = new DataOutputStream(client.getOutputStream());
+					ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+			          //°e¥Xobject
+			          out.writeObject(data);
+			          out.flush();
+			          out.close();
+			          out = null ;
+			          data = null ;
+			          client.close();
+			          client = null ;
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -90,7 +101,7 @@ public class Client implements Serializable{
 			}			
 		});
 	   
-	    socketClient.start();
+	    socketClient.start();*/
 		performLogin();
 	}
 	
@@ -101,7 +112,7 @@ public class Client implements Serializable{
 			try {
 				connection.login(username, password);
 				System.out.println("Login successfully.");
-				chatGUI = new ChatGUI(username, chatManager, messageListener);
+				chatGUI = new ChatGUI(username, chatManager, messageListener, server, socketPort);
 			} catch (XMPPException e) {
 				e.printStackTrace();
 				System.out.println("Wrong username or password.");

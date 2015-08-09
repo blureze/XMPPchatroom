@@ -11,7 +11,7 @@ public class Main {
 	private static ObjectInputStream in;
 	
 	public static void main(String[] args) throws InterruptedException {
-       Thread socketServer = new Thread(new Runnable() {
+       /*Thread socketServer = new Thread(new Runnable() {
 		@Override
 		public void run() {
 			try {
@@ -23,15 +23,21 @@ public class Main {
 	        }
 	        
 			try {
-				s = server.accept();
-				System.out.println("取得連線 : InetAddress = " + s.getInetAddress());
+		        synchronized(server) 
+		        {
+		          s = server.accept();
+		        }
+		        System.out.println("取得連線 : InetAddress = " + s.getInetAddress()  );
+		        s.setSoTimeout(15000);
 				in = new ObjectInputStream(s.getInputStream());
+		        //DataTest data = (DataTest)in.readObject();
+		        //System.out.println("我取得的值:"+data.getP());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}			
 		}
-       });
-        
+       });*/
+        new Server().start();
 		new LoginGUI();
 		
 		/*Client xmppManager = new Client("140.114.204.76", 5222);
@@ -42,7 +48,7 @@ public class Main {
 
 		xmppManager.printRoster();*/
 		
-		socketServer.start();
+		//socketServer.start();
 		/*boolean isRunning = true;
 		while (isRunning) {
 			Thread.sleep(50);

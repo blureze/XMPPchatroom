@@ -10,4 +10,8 @@ public class MouseCoordinate implements Serializable{
 		this.x = MouseX;
 		this.y = MouseY;
 	}
+	
+	public int getMouse() {
+		return 1234;
+	}
 }
