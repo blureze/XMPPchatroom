@@ -1,10 +1,6 @@
 package com.javacodegeeks.xmpp;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Collection;
 
@@ -23,8 +19,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
 
-public class Client implements Serializable{
-	private static final long serialVersionUID = 1L;
+public class Client {
 
 	private static final int packetReplyTimeout = 500; // millis
 	
@@ -77,31 +72,6 @@ public class Client implements Serializable{
 			}
 		});
 		
-		/*Thread socketClient = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Socket client;
-				try {
-					client = new Socket(server, port);
-					System.out.println("client connect to server.");
-					ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
-			          //°e¥Xobject
-			          out.writeObject(data);
-			          out.flush();
-			          out.close();
-			          out = null ;
-			          data = null ;
-			          client.close();
-			          client = null ;
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}				
-			}			
-		});
-	   
-	    socketClient.start();*/
 		performLogin();
 	}
 	

@@ -4,6 +4,8 @@ import com.memetix.mst.detect.Detect;
 import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;
 
+
+
 public class Translator {
 	private String translatedText;
 	
